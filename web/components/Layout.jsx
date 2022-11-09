@@ -224,7 +224,7 @@ const Layout = ({ children }) => {
           >
             <MenuIcon />
           </IconButton>
-          <Typography style={{ flexGrow: 1 }}>Live Talker</Typography>
+          <Typography style={{ flexGrow: 1 }}>WebRTC Call App</Typography>
           <Typography>{user.name}</Typography>
           <div className={classes.presence_parent}>
             <div
