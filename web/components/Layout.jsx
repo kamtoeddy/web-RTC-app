@@ -177,7 +177,9 @@ const Layout = ({ children }) => {
             )}
           </IconButton>
         </div>
+
         <Divider />
+
         <List>
           {menuItems.map((item) => {
             const isActiveLink = router.pathname == item.path;
