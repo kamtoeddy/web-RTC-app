@@ -42,7 +42,7 @@ const Layout = ({ children }) => {
 
   let viewToShow;
 
-  if (!onCall && incommingCall) {
+  if (!onCall && incommingCall)
     viewToShow = (
       <IncommingCallScreen
         acceptCall={acceptCall}
@@ -50,9 +50,8 @@ const Layout = ({ children }) => {
         correspondent={correspondent}
       />
     );
-  }
 
-  if (onCall) {
+  if (onCall)
     viewToShow = (
       <VideoCallScreen
         correspondent={correspondent}
@@ -67,11 +66,9 @@ const Layout = ({ children }) => {
         toggleAudio={toggleAudio}
       />
     );
-  }
 
-  if (!viewToShow) {
+  if (!viewToShow)
     viewToShow = <div className={classes.content}>{children}</div>;
-  }
 
   return (
     <>
