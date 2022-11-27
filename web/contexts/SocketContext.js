@@ -22,7 +22,6 @@ const SocketContextProvider = ({ children }) => {
 
   const onlineUsersE = (users) => {
     // On users update listener
-    console.log(users);
     setOnlineUsers(users);
   };
 
