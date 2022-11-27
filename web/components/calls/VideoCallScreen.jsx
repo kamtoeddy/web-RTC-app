@@ -1,6 +1,6 @@
-import styles from "./videoCallStyles.module.scss";
-
 import { useEffect, useRef } from "react";
+
+import styles from "./videoCallStyles.module.scss";
 
 // mui icons
 import Fab from "@mui/material/Fab";
@@ -11,20 +11,18 @@ import VideocamOffIcon from "@mui/icons-material/VideocamOff";
 import MicIcon from "@mui/icons-material/Mic";
 import MicOffIcon from "@mui/icons-material/MicOff";
 
-const VideoCallScreen = (props) => {
-  const {
-    correspondent,
-    localStream,
-    remoteStream,
-    callConnected,
-    callStatus,
-    videoOn,
-    audioOn,
-    toggleVideo,
-    toggleAudio,
-    endCall,
-  } = props;
-
+const VideoCallScreen = ({
+  correspondent,
+  localStream,
+  remoteStream,
+  callConnected,
+  callStatus,
+  videoOn,
+  audioOn,
+  toggleVideo,
+  toggleAudio,
+  endCall,
+}) => {
   const localVideoRef = useRef();
   const remoteVideoRef = useRef();
 
@@ -53,9 +51,7 @@ const VideoCallScreen = (props) => {
             bgcolor: red[500],
             "&:hover": { bgcolor: red[600] },
           }}
-          onClick={() => {
-            endCall(correspondent);
-          }}
+          onClick={() => endCall(correspondent)}
         >
           <CallEndIcon />
         </Fab>

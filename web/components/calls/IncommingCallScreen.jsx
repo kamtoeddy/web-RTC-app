@@ -1,4 +1,3 @@
-// import { useEffect, useState } from "react";
 import styles from "./videoCallStyles.module.scss";
 
 // mui components
@@ -7,9 +6,7 @@ import { green, red } from "@mui/material/colors";
 import CallIcon from "@mui/icons-material/Call";
 import CallEndIcon from "@mui/icons-material/CallEnd";
 
-const IncommingCallScreen = (props) => {
-  const { correspondent, acceptCall, endCall } = props;
-
+const IncommingCallScreen = ({ correspondent, acceptCall, endCall }) => {
   return (
     <div className={styles.incommingCallParent}>
       <div className="info">{correspondent?.name} is calling</div>
@@ -22,9 +19,7 @@ const IncommingCallScreen = (props) => {
             bgcolor: green[500],
             "&:hover": { bgcolor: green[600] },
           }}
-          onClick={() => {
-            acceptCall(correspondent);
-          }}
+          onClick={() => acceptCall(correspondent)}
         >
           <CallIcon />
         </Fab>
@@ -36,9 +31,7 @@ const IncommingCallScreen = (props) => {
             bgcolor: red[500],
             "&:hover": { bgcolor: red[600] },
           }}
-          onClick={() => {
-            endCall(correspondent);
-          }}
+          onClick={() => endCall(correspondent)}
         >
           <CallEndIcon />
         </Fab>

@@ -3,9 +3,7 @@ import Fab from "@mui/material/Fab";
 import { green } from "@mui/material/colors";
 import CallIcon from "@mui/icons-material/Call";
 
-const OnlineUsers = (props) => {
-  const { onlineUsers, myId, makeCall } = props;
-
+const OnlineUsers = ({ onlineUsers, myId, makeCall }) => {
   return (
     <div
       style={{
