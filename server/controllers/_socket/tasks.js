@@ -1,34 +1,5 @@
 const defaultTask = (dt) => dt;
 
-const {
-  createHostServerPeer,
-  getBcastStats,
-  handleIcecandidate,
-  stopWatching,
-  watchBcast,
-} = require("./bcastTasks");
-
-const broadcasts = {
-  "cE-bcast-start": {
-    task: createHostServerPeer,
-    taskProps: ["bcastId", "hostId", "sdp"],
-  },
-  "cE-bcast-get-stats": { task: getBcastStats, taskProps: ["bcastId"] },
-  "cE-bcast-icecandidate": {
-    task: handleIcecandidate,
-    taskProps: ["bcastId", "ice", "userId"],
-  },
-  "cE-bcast-stop-watching": {
-    task: stopWatching,
-    taskProps: ["bcastId", "userId"],
-  },
-  "cE-bcast-start-watching": {
-    task: watchBcast,
-    taskProps: ["bcastId", "sdp", "userId", "userName"],
-  },
-  "cE-bcast-stopped": { task: defaultTask, taskProps: [] },
-};
-
 const calls = {
   "cE-call-accepted": {
     task: ({ _id, name, sdp }) => ({ _id, name, sdp }),
@@ -47,4 +18,4 @@ const calls = {
   "cE-call-ringing": { task: defaultTask, taskProps: [] },
 };
 
-module.exports = { ...broadcasts, ...calls };
+module.exports = calls;
