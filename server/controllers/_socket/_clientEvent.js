@@ -13,13 +13,11 @@ const handleEvent = async ({ name = "", props = {}, rooms = [] }, socket) => {
   try {
     if (!global.io) throw new Error("Socket connection not established");
 
-    if (!name?.startsWith("cE-")) {
+    if (!name?.startsWith("cE-"))
       throw new Error(`${name} is not a valid event name`);
-    }
 
-    if (isDebugOpen) {
+    if (isDebugOpen)
       console.log(`\nClient Event {${name}} by ${socketID} Started`);
-    }
 
     const { task, _props } = getTask({ name, props });
 
@@ -27,9 +25,8 @@ const handleEvent = async ({ name = "", props = {}, rooms = [] }, socket) => {
 
     if (rooms.length) emitEvent({ name, data, rooms });
 
-    if (isDebugOpen) {
+    if (isDebugOpen)
       console.log(`Client Event {${name}} by ${socketID} Successful\n`);
-    }
   } catch (err) {
     if (isDebugOpen) {
       console.log("\n========== [ Log Start ] ==========");
