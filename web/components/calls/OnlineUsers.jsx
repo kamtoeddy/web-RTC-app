@@ -16,37 +16,44 @@ const OnlineUsers = ({ onlineUsers, myId, makeCall }) => {
         paddingTop: "10px",
       }}
     >
-      {onlineUsers
-        .filter((onlineUser) => myId !== onlineUser._id)
-        .map((user) => (
-          <div
-            key={user._id}
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              width: "220px",
-              padding: "5px 10px",
-              fontSize: "large",
-              border: "1px solid green",
-              borderRadius: "4px",
-            }}
-          >
-            <div>{user.name}</div>
-
-            <Fab
-              sx={{
-                color: "white",
-                bgcolor: green[500],
-                "&:hover": { bgcolor: green[600] },
+      {onlineUsers.length > 1 &&
+        onlineUsers
+          .filter((onlineUser) => myId !== onlineUser._id)
+          .map((user) => (
+            <div
+              key={user._id}
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                width: "220px",
+                padding: "5px 10px",
+                fontSize: "large",
+                border: "1px solid green",
+                borderRadius: "4px",
               }}
-              size={"small"}
-              onClick={() => makeCall(user)}
             >
-              <CallIcon />
-            </Fab>
-          </div>
-        ))}
+              <div>{user.name}</div>
+
+              <Fab
+                sx={{
+                  color: "white",
+                  bgcolor: green[500],
+                  "&:hover": { bgcolor: green[600] },
+                }}
+                size={"small"}
+                onClick={() => makeCall(user)}
+              >
+                <CallIcon />
+              </Fab>
+            </div>
+          ))}
+
+      {onlineUsers.length <= 1 && (
+        <div style={{ color: "black", fontSize: "large" }}>
+          Share the link to this page with a friend to start discussing
+        </div>
+      )}
     </div>
   );
 };

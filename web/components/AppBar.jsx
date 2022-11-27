@@ -3,8 +3,8 @@ import { AppBar as AppBar_, Avatar, Toolbar, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 
 // contexts
-import { AuthContext } from "../../contexts/AuthContext";
-import { SocketContext } from "../../contexts/SocketContext";
+import { AuthContext } from "../contexts/AuthContext";
+import { SocketContext } from "../contexts/SocketContext";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -42,24 +42,28 @@ function AppBar() {
   const { socketConnected } = useContext(SocketContext);
 
   return (
-    <AppBar_ position="fixed" className={classes.appBar} elevation={0}>
-      <Toolbar className={classes.toolbar}>
-        <Typography>{user.name}</Typography>
+    <>
+      <AppBar_ position="fixed" className={classes.appBar} elevation={0}>
+        <Toolbar className={classes.toolbar}>
+          <Typography>{user.name}</Typography>
 
-        <div className={classes.presence_parent}>
-          <div
-            className={`${classes.presence_dot} ${
-              socketConnected && classes.presence_online
-            }`}
-          />
+          <div className={classes.presence_parent}>
+            <div
+              className={`${classes.presence_dot} ${
+                socketConnected && classes.presence_online
+              }`}
+            />
 
-          <Avatar
-            alt={user.name}
-            style={{ marginLeft: "5px", cursor: "pointer" }}
-          />
-        </div>
-      </Toolbar>
-    </AppBar_>
+            <Avatar
+              alt={user.name}
+              style={{ marginLeft: "5px", cursor: "pointer" }}
+            />
+          </div>
+        </Toolbar>
+      </AppBar_>
+
+      <div className={classes.toolbar} />
+    </>
   );
 }
 
