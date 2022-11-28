@@ -47,6 +47,8 @@ const CallContextProvider = ({ children }) => {
     remoteStreamRef.current = remoteStream;
     onCallRef.current = onCall;
     incommingCallRef.current = incommingCall;
+
+    console.log(RTCSettings);
   });
 
   const releaseMediaResources = () => {
@@ -75,7 +77,7 @@ const CallContextProvider = ({ children }) => {
 
       if (_peer.connectionState === "connected") setCallConnected(true);
 
-      console.log("Connection State:", _peer, _peer.connectionState);
+      console.log("Connection State:", _peer);
     };
 
     _peer.ontrack = (e) => setRemoteStream(e.streams[0]);
@@ -110,8 +112,6 @@ const CallContextProvider = ({ children }) => {
 
     if (!iamCaller.current) {
       if (remoteSdp) {
-        console.log("Remote Sdp set");
-
         await _peer.setRemoteDescription(new RTCSessionDescription(remoteSdp));
 
         const answer = await _peer.createAnswer();
@@ -127,11 +127,7 @@ const CallContextProvider = ({ children }) => {
           },
           rooms: [correspondent._id],
         });
-
-        // console.log("Answer Sent");
       }
-
-      console.log();
 
       if (iceCandidates.current.length > 0) {
         iceCandidates.current
