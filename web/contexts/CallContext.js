@@ -47,8 +47,6 @@ const CallContextProvider = ({ children }) => {
     remoteStreamRef.current = remoteStream;
     onCallRef.current = onCall;
     incommingCallRef.current = incommingCall;
-
-    console.log(RTCSettings);
   });
 
   const releaseMediaResources = () => {
