@@ -10,20 +10,23 @@ const profiles = {
 export const SoundContext = createContext();
 
 const SoundContextProvider = ({ children }) => {
-  const [audio, setAudio] = useState(null);
+  const [audio] = useState(new Audio());
   const [callSound, set_CallSound] = useState({
     play: false,
     profile: "",
     url: profiles.default,
   });
-  //   const [notifSound, setNotifSound] = useState({});
 
-  useEffect(() => setAudio(new Audio()), []);
+  const onSoundEnded = () => audio.play();
 
   useEffect(() => {
-    if (audio) {
-      audio.addEventListener("ended", () => audio.play());
-    }
+    if (!audio) return;
+
+    audio.addEventListener("ended", onSoundEnded);
+
+    return () => {
+      audio.removeEventListener("ended", onSoundEnded);
+    };
   }, [audio]);
 
   useEffect(() => {
@@ -36,9 +39,7 @@ const SoundContextProvider = ({ children }) => {
 
   const setCallSound = ({ play = false, profile = "" } = { play: false }) => {
     const _callSound = { play };
-    if (play) {
-      _callSound.url = getSoundByProfile({ profile });
-    }
+    if (play) _callSound.url = getSoundByProfile({ profile });
 
     set_CallSound(_callSound);
   };

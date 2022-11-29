@@ -29,8 +29,6 @@ const VideoCallScreen = ({
   useEffect(() => {
     localVideoRef.current.srcObject = localStream;
     remoteVideoRef.current.srcObject = remoteStream;
-
-    return () => {};
   }, [localStream, remoteStream]);
 
   return (
@@ -55,23 +53,18 @@ const VideoCallScreen = ({
         >
           <CallEndIcon />
         </Fab>
+
         <Fab
           className={styles.btn}
-          sx={{
-            "&:hover": {
-              color: "white",
-              bgcolor: red[600],
-            },
-          }}
+          sx={{ "&:hover": { color: "white", bgcolor: red[600] } }}
           onClick={toggleVideo}
         >
           {videoOn ? <VideocamOffIcon /> : <VideocamIcon />}
         </Fab>
+
         <Fab
           className={styles.btn}
-          sx={{
-            "&:hover": { color: "white", bgcolor: red[600] },
-          }}
+          sx={{ "&:hover": { color: "white", bgcolor: red[600] } }}
           onClick={toggleAudio}
         >
           {audioOn ? <MicOffIcon /> : <MicIcon />}

@@ -2,8 +2,8 @@ const defaultTask = (dt) => dt;
 
 const calls = {
   "cE-call-accepted": {
-    task: ({ _id, name, sdp }) => ({ _id, name, sdp }),
-    taskProps: ["_id", "name", "sdp"],
+    task: ({ id, name, sdp }) => ({ id, name, sdp }),
+    taskProps: ["id", "name", "sdp"],
   },
   "cE-call-ended": { task: defaultTask, taskProps: [] },
   "cE-call-icecandidate": {
@@ -11,8 +11,8 @@ const calls = {
     taskProps: ["correspondent_id", "ice"],
   },
   "cE-call-incomming": {
-    task: ({ _id, name, sdp }) => ({ _id, name, sdp }),
-    taskProps: ["_id", "name", "sdp"],
+    task: ({ id, name, sdp }) => ({ id, name, sdp }),
+    taskProps: ["id", "name", "sdp"],
   },
   "cE-call-line busy": { task: defaultTask, taskProps: [] },
   "cE-call-ringing": { task: defaultTask, taskProps: [] },
