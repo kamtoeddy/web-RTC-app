@@ -2,6 +2,7 @@ if (process.env.NODE_ENV !== "production") require("dotenv").config();
 
 const cors = require("cors");
 const express = require("express");
+const { PeerServer } = require("peer");
 
 const app = express();
 const httpServer = require("http").createServer(app);
@@ -22,6 +23,9 @@ const { socketController } = require("./controllers/_socket");
 
 const port = process.env.PORT || 4000;
 httpServer.listen(port, async () => {
+  const peerServer = PeerServer({ port: 9000, path: "/myapp" });
+
+  peerServer.listen();
   console.log(`Server up and running @:${port}`);
 
   global.io.on("connection", socketController);
