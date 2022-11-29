@@ -2,25 +2,25 @@ const { handleEvent } = require("./_clientEvent");
 
 const onlineUsersRoom = "room-online_users";
 
-global._updateUser = ({ _id, ...changes }) => {
-  const user = global._getUser(_id);
+global._updateUser = ({ id, ...changes }) => {
+  const user = global._getUser(id);
 
   if (!user) return;
 
-  global.users.set(_id, { ...user, ...changes });
+  global.users.set(id, { ...user, ...changes });
 };
 
-const _removeUser = (_id, conn) => {
-  const user = global._getUser(_id);
+const _removeUser = (id) => {
+  const user = global._getUser(id);
 
   if (!user) return;
 
-  global.users.delete(_id);
+  global.users.delete(id);
 };
 
 const getOnlineUsers = () => {
-  return Array.from(users.values()).map(({ _id, name, conn }) => ({
-    _id,
+  return Array.from(users.values()).map(({ id, name, conn }) => ({
+    id,
     name,
     conn,
   }));
@@ -37,12 +37,12 @@ const updateOnlineUsers = () => {
 };
 
 function socketController(socket) {
-  socket.on("register", ({ _id, name }) => {
-    global.users.set(_id, { _id, name, socketId: socket.id });
+  socket.on("register", ({ id, name }) => {
+    global.users.set(id, { id, name, socketId: socket.id });
 
-    global.usersSocketToId.set(socket.id, _id);
+    global.usersSocketToId.set(socket.id, id);
 
-    socket.join(_id);
+    socket.join(id);
 
     socket.join(onlineUsersRoom);
 
