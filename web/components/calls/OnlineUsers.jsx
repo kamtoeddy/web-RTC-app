@@ -18,10 +18,10 @@ const OnlineUsers = ({ onlineUsers, myId, makeCall }) => {
     >
       {onlineUsers.length > 1 &&
         onlineUsers
-          .filter((onlineUser) => myId !== onlineUser._id)
+          .filter((onlineUser) => myId !== onlineUser.id)
           .map((user) => (
             <div
-              key={user._id}
+              key={user.id}
               style={{
                 display: "flex",
                 justifyContent: "space-between",

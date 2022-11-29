@@ -63,7 +63,7 @@ const Home = () => {
       {!onCall && !incommingCall && (
         <OnlineUsers
           onlineUsers={onlineUsers}
-          myId={user._id}
+          myId={user.id}
           makeCall={makeCall}
         />
       )}
