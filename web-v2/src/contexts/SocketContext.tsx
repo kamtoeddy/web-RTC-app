@@ -5,8 +5,15 @@ import { useAuthCTX, User } from "./AuthContext";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
+type EventName =
+  | "cE-call-accepted"
+  | "cE-call-ended"
+  | "cE-call-incomming"
+  | "cE-call-line busy"
+  | "cE-call-ringing";
+
 type EmitProps = {
-  name: string;
+  name: EventName;
   props?: Record<string, any>;
   rooms: string[];
 };

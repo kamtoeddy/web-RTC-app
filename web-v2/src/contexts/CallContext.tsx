@@ -136,6 +136,8 @@ const CallContextProvider = ({ children }: any) => {
 
     setLocalStream(stream);
 
+    emitEvent({ name: "cE-call-incomming", props: user, rooms: [callee.id] });
+
     setCallSound({ play: true, profile: "Outgoing Call" });
     setCallStatus("Calling");
     setIsOnCall(true);
