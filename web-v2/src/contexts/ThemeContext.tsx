@@ -1,4 +1,4 @@
-import { createTheme } from "@mui/material";
+import { createTheme, ThemeProvider } from "@mui/material";
 
 const theme = createTheme({
   palette: {
@@ -9,13 +9,13 @@ const theme = createTheme({
   typography: {
     fontFamily: "Quicksand",
     fontWeightLight: 400,
-    fontWeightregular: 500,
+    fontWeightRegular: 500,
     fontWeightMedium: 600,
     fontWeightBold: 700,
   },
 });
 
-const ThemeContextProvider = ({ children }) => {
+const ThemeContextProvider = ({ children }: any) => {
   return <ThemeProvider theme={theme}>{children}</ThemeProvider>;
 };
 

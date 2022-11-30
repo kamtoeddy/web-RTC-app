@@ -14,7 +14,7 @@ const user = { name: faker.name.firstName(), id: faker.datatype.uuid() };
 
 const AuthContext = createContext<AuthContextType>({ user });
 
-const AuthContextProvider: React.FC<React.ReactNode> = ({ children }: any) => {
+const AuthContextProvider = ({ children }: any) => {
   return (
     <AuthContext.Provider value={{ user }}>{children}</AuthContext.Provider>
   );

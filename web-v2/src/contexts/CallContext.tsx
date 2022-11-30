@@ -8,7 +8,7 @@ import { useSoundCTX } from "./SoundContext";
 
 type CallStatusType = "" | "Calling" | "Connected" | "Line Busy" | "Ringing";
 
-type CallContextType = {
+export type CallContextType = {
   callStatus: CallStatusType;
   correspondent?: User;
   isAudioOn: boolean;

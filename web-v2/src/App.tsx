@@ -1,31 +1,56 @@
+import "./App.css";
+
+// contexts
+import { useAuthCTX } from "./contexts/AuthContext";
+import { useCallCTX } from "./contexts/CallContext";
+import { useSocketCTX } from "./contexts/SocketContext";
+
+// components
 import AppBar from "@mui/material/AppBar";
 import IncommingCallScreen from "./components/IncommingCallScreen";
 import OnlineUsers from "./components/OnlineUsers";
 import VideoCallScreen from "./components/VideoCallScreen";
 
-import "./App.css";
-
 function App() {
+  const { user } = useAuthCTX();
+  const {
+    acceptCall,
+    callStatus,
+    correspondent,
+    endCall,
+    makeCall,
+    localStream,
+    remoteStream,
+    isCallConnected,
+    isIncommingCall,
+    isOnCall,
+    isAudioOn,
+    isVideoOn,
+    toggleAudio,
+    toggleVideo,
+  } = useCallCTX()!;
+
+  const { onlineUsers } = useSocketCTX();
   return (
     <div className="App">
       <AppBar />
 
-      {onCall && (
+      {isOnCall && (
         <VideoCallScreen
           correspondent={correspondent}
           localStream={localStream}
           remoteStream={remoteStream}
-          callConnected={callConnected}
+          isCallConnected={isCallConnected}
           callStatus={callStatus}
-          videoOn={videoOn}
-          audioOn={audioOn}
+          isVideoOn={isVideoOn}
+          isAudioOn={isAudioOn}
           endCall={endCall}
           toggleVideo={toggleVideo}
           toggleAudio={toggleAudio}
         />
       )}
 
-      {!onCall && incommingCall && (
+      {!isOnCall && isIncommingCall && (
         <IncommingCallScreen
           acceptCall={acceptCall}
           endCall={endCall}
@@ -33,7 +58,7 @@ function App() {
         />
       )}
 
-      {!onCall && !incommingCall && (
+      {!isOnCall && !isIncommingCall && (
         <OnlineUsers
           onlineUsers={onlineUsers}
           myId={user.id}

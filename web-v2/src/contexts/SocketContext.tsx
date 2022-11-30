@@ -18,9 +18,7 @@ type SocketCtxType = {
 
 export const SocketContext = createContext<SocketCtxType>({} as SocketCtxType);
 
-const SocketContextProvider: React.FC<React.ReactNode> = ({
-  children,
-}: any) => {
+const SocketContextProvider = ({ children }: any) => {
   const { user } = useAuthCTX();
 
   const [socket] = useState(
