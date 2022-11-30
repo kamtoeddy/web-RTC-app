@@ -4,7 +4,7 @@ import { useCallCTX } from "./contexts/CallContext";
 import { useSocketCTX } from "./contexts/SocketContext";
 
 // components
-import AppBar from "@mui/material/AppBar";
+import AppBar from "./components/AppBar";
 import IncommingCallScreen from "./components/IncommingCallScreen";
 import OnlineUsers from "./components/OnlineUsers";
 import VideoCallScreen from "./components/VideoCallScreen";

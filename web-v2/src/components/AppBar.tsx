@@ -5,7 +5,7 @@ import { makeStyles } from "@mui/styles";
 import { useAuthCTX } from "../contexts/AuthContext";
 import { useSocketCTX } from "../contexts/SocketContext";
 
-const useStyles = makeStyles((theme) => {
+const useStyles = makeStyles((theme: any) => {
   return {
     appBar: {
       color: "black",
@@ -16,8 +16,9 @@ const useStyles = makeStyles((theme) => {
       display: "flex",
       alignItems: "center",
       justifyContent: "flex-end",
+      backgroundColor: "white",
       // necessary for content to be below app bar
-      // ...theme.mixins.toolbar,
+      ...theme.mixins.toolbar,
     },
     presence_parent: { position: "relative" },
     presence_dot: {
