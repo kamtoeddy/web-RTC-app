@@ -38,7 +38,6 @@ const updateOnlineUsers = () => {
 
 function socketController(socket) {
   socket.on("register", ({ id, name }) => {
-    console.log(socket.id);
     global.users.set(id, { id, name, socketId: socket.id });
 
     global.usersSocketToId.set(socket.id, id);

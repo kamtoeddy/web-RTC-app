@@ -31,14 +31,11 @@ const SocketContextProvider = ({ children }: any) => {
   const [isSocketConnected, setIsSocketConnected] = useState(false);
 
   const connectE = () => {
-    console.log(socket.id);
     setIsSocketConnected(true);
     socket.emit("register", user);
   };
 
   const onlineUsersE = (users: User[]) => {
-    // On users update listener
-    console.log(users);
     setOnlineUsers(users);
   };
 
@@ -77,8 +74,6 @@ const SocketContextProvider = ({ children }: any) => {
       socket.off("User offline", userOfflineE);
 
       socket.off("disconnect", disconnectE);
-
-      socket.close();
     };
   }, [socket]);
 
