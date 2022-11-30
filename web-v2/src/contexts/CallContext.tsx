@@ -149,6 +149,8 @@ const CallContextProvider = ({ children }: any) => {
 
     const call = myPeer.call(caller.id, stream);
 
+    emitEvent({ name: "cE-call-accepted", props: user, rooms: [caller.id] });
+
     setLocalStream(stream);
     setCallConnection(call);
 
