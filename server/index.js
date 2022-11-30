@@ -7,9 +7,7 @@ const { PeerServer } = require("peer");
 const app = express();
 const httpServer = require("http").createServer(app);
 
-global.io = require("socket.io")(httpServer, {
-  cors: { origin: process.env.FRONT_END },
-});
+global.io = require("socket.io")(httpServer);
 
 global.broadcasts = new Map();
 global.users = new Map();

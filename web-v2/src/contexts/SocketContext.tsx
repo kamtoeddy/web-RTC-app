@@ -23,30 +23,35 @@ export const SocketContext = createContext<SocketCtxType>({} as SocketCtxType);
 const SocketContextProvider = ({ children }: any) => {
   const { user } = useAuthCTX();
 
-  const [socket] = useState(io(BACKEND_URL, { transports: ["websocket"] }));
+  const [socket] = useState(
+    io(BACKEND_URL, { transports: ["websocket", "polling"] })
+  );
 
   const [onlineUsers, setOnlineUsers] = useState<User[]>([]);
   const [isSocketConnected, setIsSocketConnected] = useState(false);
 
   const connectE = () => {
+    console.log(socket.id);
     setIsSocketConnected(true);
     socket.emit("register", user);
   };
 
   const onlineUsersE = (users: User[]) => {
     // On users update listener
+    console.log(users);
     setOnlineUsers(users);
   };
 
-  const userOfflineE = ({ id }: any) => {
+  const userOfflineE = ({ id: _id }: any) => {
     // On users update listener
-    setOnlineUsers((users) => users.filter(({ id }) => id !== id));
+    setOnlineUsers((users) => users.filter(({ id }) => _id !== id));
   };
 
   const userOnlineE = (user: User) =>
     setOnlineUsers((users) => [...users, user]);
 
   const disconnectE = () => {
+    // console.log("disconnected");
     setIsSocketConnected(false);
     setOnlineUsers([]);
   };
