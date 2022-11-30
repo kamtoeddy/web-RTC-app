@@ -1,10 +1,9 @@
-import { useContext } from "react";
 import { AppBar as AppBar_, Avatar, Toolbar, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 
 // contexts
-import { AuthContext } from "../contexts/AuthContext";
-import { SocketContext } from "../contexts/SocketContext";
+import { useAuthCTX } from "../contexts/AuthContext";
+import { useSocketCTX } from "../contexts/SocketContext";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -18,7 +17,7 @@ const useStyles = makeStyles((theme) => {
       alignItems: "center",
       justifyContent: "flex-end",
       // necessary for content to be below app bar
-      ...theme.mixins.toolbar,
+      // ...theme.mixins.toolbar,
     },
     presence_parent: { position: "relative" },
     presence_dot: {
@@ -38,8 +37,8 @@ const useStyles = makeStyles((theme) => {
 function AppBar() {
   const classes = useStyles();
 
-  const { user } = useContext(AuthContext);
-  const { socketConnected } = useContext(SocketContext);
+  const { user } = useAuthCTX();
+  const { isSocketConnected } = useSocketCTX();
 
   return (
     <>
@@ -50,7 +49,7 @@ function AppBar() {
           <div className={classes.presence_parent}>
             <div
               className={`${classes.presence_dot} ${
-                socketConnected && classes.presence_online
+                isSocketConnected && classes.presence_online
               }`}
             />
 

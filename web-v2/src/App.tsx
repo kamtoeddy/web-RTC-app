@@ -1,5 +1,3 @@
-import "./App.css";
-
 // contexts
 import { useAuthCTX } from "./contexts/AuthContext";
 import { useCallCTX } from "./contexts/CallContext";
