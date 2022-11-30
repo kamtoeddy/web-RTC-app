@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 const profiles = {
   default: "/audio/on-hold-ringtone-1361.wav",
-  "Incommig Call": "/audio/waiting-ringtone-1354.wav",
+  "Incomming Call": "/audio/waiting-ringtone-1354.wav",
   "Outgoing Call": "/audio/UKphoneringing.mp3",
   "Line Busy": "/audio/Busysignal.mp3",
 };
@@ -19,7 +19,7 @@ type SoundCtxType = {
   callSound: CallSoundType;
   playSound: (url: string) => void;
   pauseSound: () => void;
-  setCallSound: (dt: CallSoundType) => void;
+  setCallSound: (dt?: CallSoundType) => void;
 };
 
 const SoundContext = createContext<SoundCtxType>({} as SoundCtxType);

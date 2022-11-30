@@ -5,7 +5,7 @@ import { useAuthCTX, User } from "./AuthContext";
 
 type EmitProps = {
   name: string;
-  props: Record<string, any>;
+  props?: Record<string, any>;
   rooms: string[];
 };
 
