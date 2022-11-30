@@ -2,8 +2,15 @@
 import Fab from "@mui/material/Fab";
 import { green } from "@mui/material/colors";
 import CallIcon from "@mui/icons-material/Call";
+import { User } from "../contexts/AuthContext";
 
-const OnlineUsers = ({ onlineUsers, myId, makeCall }) => {
+type Props = {
+  onlineUsers: User[];
+  myId: string;
+  makeCall: (dt: User) => void;
+};
+
+const OnlineUsers = ({ onlineUsers, myId, makeCall }: Props) => {
   return (
     <div
       style={{
