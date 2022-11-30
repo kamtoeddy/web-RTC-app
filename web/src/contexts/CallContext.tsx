@@ -1,32 +1,70 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
-import { Peer } from "peerjs";
+import { MediaConnection, Peer } from "peerjs";
 
 // contexts
-import { AuthContext } from "./AuthContext";
-import { SocketContext } from "./SocketContext";
-import { SoundContext } from "./SoundContext";
+import { useAuthCTX, User } from "./AuthContext";
+import { useSocketCTX } from "./SocketContext";
+import { useSoundCTX } from "./SoundContext";
 
-// rtc configs
-import RTCSettings from "../public/rtc-settings";
+type CallStatusType = "" | "Calling" | "Connected" | "Line Busy" | "Ringing";
 
-export const CallContext = createContext();
+export type CallContextType = {
+  callStatus: CallStatusType;
+  correspondent?: User;
+  isAudioOn: boolean;
+  isCallConnected: boolean;
+  isIncommingCall: boolean;
+  isOnCall: boolean;
+  isVideoOn: boolean;
+  localStream?: MediaStream;
+  remoteStream?: MediaStream;
+  // methods
+  acceptCall: (u: User) => void;
+  endCall: (u?: User) => void;
+  makeCall: (u: User) => void;
+  toggleAudio: () => void;
+  toggleVideo: () => void;
+};
 
-const CallContextProvider = ({ children }) => {
-  const { user } = useContext(AuthContext);
-  const { emitEvent, socket } = useContext(SocketContext);
-  const { setCallSound } = useContext(SoundContext);
+const MEDIA_CONSTRAINTS = {
+  video: {
+    frameRate: { min: 24, ideal: 30, max: 60 },
+    width: { min: 480, ideal: 720, max: 1280 },
+    height: "auto",
+    aspectRatio: 1.33333,
+  },
+  audio: {
+    echoCancellation: true,
+    noiseSuppression: true,
+  },
+} as MediaStreamConstraints;
 
-  const [callConnection, setCallConnection] = useState(null);
-  const [callStatus, setCallStatus] = useState("");
-  const [correspondent, setCorrespondent] = useState(null);
-  const [onCall, setOnCall] = useState(false);
-  const [callConnected, setCallConnected] = useState(false);
-  const [incommingCall, setIncommingCall] = useState(false);
-  const [myPeer] = useState(new Peer(user.id));
+const peerConfig = {
+  host: import.meta.env.VITE_PEER_SERVER_HOST,
+  path: import.meta.env.VITE_PEER_SERVER_PATH,
+  port: import.meta.env.VITE_PEER_SERVER_PORT,
+};
+
+export const CallContext = createContext<CallContextType | null>(null);
+
+const CallContextProvider = ({ children }: any) => {
+  const { user } = useAuthCTX();
+  const { emitEvent, socket } = useSocketCTX();
+  const { setCallSound } = useSoundCTX();
+
+  const [callConnection, setCallConnection] = useState<MediaConnection | null>(
+    null
+  );
+  const [callStatus, setCallStatus] = useState<CallStatusType>("");
+  const [correspondent, setCorrespondent] = useState<User | null>(null);
+  const [isOnCall, setIsOnCall] = useState(false);
+  const [isCallConnected, setIsCallConnected] = useState(false);
+  const [isIncommingCall, setIsIncommingCall] = useState(false);
+  const [myPeer] = useState(new Peer(user.id, peerConfig));
 
   // video streams
-  const [localStream, setLocalStream] = useState();
-  const [remoteStream, setRemoteStream] = useState();
+  const [localStream, setLocalStream] = useState<MediaStream>();
+  const [remoteStream, setRemoteStream] = useState<MediaStream>();
 
   const localStreamRef = useRef(localStream);
   const remoteStreamRef = useRef(remoteStream);
@@ -35,19 +73,19 @@ const CallContextProvider = ({ children }) => {
 
   const callRang = useRef(false);
   const correspondentRef = useRef(correspondent);
-  const incommingCallRef = useRef(incommingCall);
-  const onCallRef = useRef(onCall);
+  const incommingCallRef = useRef(isIncommingCall);
+  const onCallRef = useRef(isOnCall);
 
-  const [videoOn, setVideoOn] = useState(true);
-  const [audioOn, setAudioOn] = useState(true);
+  const [isVideoOn, setIsVideoOn] = useState(true);
+  const [isAudioOn, setIsAudioOn] = useState(true);
 
-  const onCallListener = (call) => {
+  const onCallListener = (call: MediaConnection) => {
     if (!iamCaller.current) return;
 
     call.answer(localStream);
   };
 
-  const onStreamListener = (remoteStream) => {
+  const onStreamListener = (remoteStream: MediaStream) => {
     setRemoteStream(remoteStream);
   };
 
@@ -55,8 +93,8 @@ const CallContextProvider = ({ children }) => {
     correspondentRef.current = correspondent;
     localStreamRef.current = localStream;
     remoteStreamRef.current = remoteStream;
-    onCallRef.current = onCall;
-    incommingCallRef.current = incommingCall;
+    onCallRef.current = isOnCall;
+    incommingCallRef.current = isIncommingCall;
   });
 
   useEffect(() => {
@@ -81,39 +119,39 @@ const CallContextProvider = ({ children }) => {
 
   const releaseMediaResources = () => {
     // using references here because this function is also passed in useEffect
-    localStreamRef.current?.getTracks().forEach((track) => track.stop());
-    remoteStreamRef.current?.getTracks().forEach((track) => track.stop());
+    localStreamRef.current?.getTracks().forEach((track: any) => track.stop());
+    remoteStreamRef.current?.getTracks().forEach((track: any) => track.stop());
   };
 
   const getLocalStream = async () => {
-    const stream = await navigator.mediaDevices.getUserMedia(
-      RTCSettings.constraints
-    );
-
-    stream.getTracks().forEach((track) => _peer.addTrack(track, stream));
+    const stream = await navigator.mediaDevices.getUserMedia(MEDIA_CONSTRAINTS);
 
     setLocalStream(stream);
 
     return stream;
   };
 
-  const makeCall = async (callee) => {
+  const makeCall = async (callee: User) => {
     const stream = await getLocalStream();
 
     iamCaller.current = true;
 
     setLocalStream(stream);
 
+    emitEvent({ name: "cE-call-incomming", props: user, rooms: [callee.id] });
+
     setCallSound({ play: true, profile: "Outgoing Call" });
     setCallStatus("Calling");
-    setOnCall(true);
+    setIsOnCall(true);
     setCorrespondent(callee);
   };
 
-  const acceptCall = async (caller) => {
+  const acceptCall = async (caller: User) => {
     const stream = await getLocalStream();
 
     const call = myPeer.call(caller.id, stream);
+
+    emitEvent({ name: "cE-call-accepted", props: user, rooms: [caller.id] });
 
     setLocalStream(stream);
     setCallConnection(call);
@@ -121,11 +159,11 @@ const CallContextProvider = ({ children }) => {
     setCallStatus("");
     setCallSound();
     setCorrespondent(caller);
-    setIncommingCall(false);
-    setOnCall(true);
+    setIsIncommingCall(false);
+    setIsOnCall(true);
   };
 
-  const endCall = (correspondent) => {
+  const endCall = (correspondent?: User) => {
     callConnection?.close();
 
     // console.log(correspondent);
@@ -141,31 +179,31 @@ const CallContextProvider = ({ children }) => {
     iamCaller.current = false;
 
     setCallSound({ play: false });
-    setOnCall(false);
+    setIsOnCall(false);
     setCallStatus("Calling");
 
-    setLocalStream(null);
-    setRemoteStream(null);
+    setLocalStream(undefined);
+    setRemoteStream(undefined);
 
-    setVideoOn(true);
-    setAudioOn(true);
-    setCallConnected(false);
-    setIncommingCall(false);
+    setIsVideoOn(true);
+    setIsAudioOn(true);
+    setIsCallConnected(false);
+    setIsIncommingCall(false);
     setCorrespondent(null);
   };
 
   const toggleVideo = () => {
-    localStream.getVideoTracks()[0].enabled = !videoOn;
-    setVideoOn(!videoOn);
+    localStream!.getVideoTracks()[0].enabled = !isVideoOn;
+    setIsVideoOn(!isVideoOn);
   };
 
   const toggleAudio = () => {
-    localStream.getAudioTracks()[0].enabled = !audioOn;
-    setAudioOn(!audioOn);
+    localStream!.getAudioTracks()[0].enabled = !isAudioOn;
+    setIsAudioOn(!isAudioOn);
   };
 
   // socket listeners
-  const onCallAccepted = async (data) => {
+  const onCallAccepted = async () => {
     callRang.current = true;
 
     setCallSound();
@@ -184,7 +222,7 @@ const CallContextProvider = ({ children }) => {
     setCallStatus("Ringing");
   };
 
-  const onIncommingCall = (caller) => {
+  const onIncommingCall = (caller: User) => {
     // Incomming Calls
     if (onCallRef.current || incommingCallRef.current)
       return emitEvent({ name: "cE-call-line busy", rooms: [caller.id] });
@@ -193,7 +231,7 @@ const CallContextProvider = ({ children }) => {
     emitEvent({ name: "cE-call-ringing", rooms: [caller.id] });
 
     setCallSound({ play: true, profile: "Incomming Call" });
-    setIncommingCall(true);
+    setIsIncommingCall(true);
     setCorrespondent(caller);
   };
 
@@ -224,22 +262,22 @@ const CallContextProvider = ({ children }) => {
   }, [socket]);
 
   const context = {
-    audioOn,
-    callConnected,
     callStatus,
     correspondent,
-    incommingCall,
+    isAudioOn,
+    isCallConnected,
+    isIncommingCall,
+    isOnCall,
+    isVideoOn,
     localStream,
-    onCall,
     remoteStream,
-    videoOn,
     // methods
     acceptCall,
     endCall,
     makeCall,
     toggleAudio,
     toggleVideo,
-  };
+  } as CallContextType;
 
   return (
     <CallContext.Provider value={context}>{children}</CallContext.Provider>
@@ -247,3 +285,5 @@ const CallContextProvider = ({ children }) => {
 };
 
 export default CallContextProvider;
+
+export const useCallCTX = () => useContext(CallContext);

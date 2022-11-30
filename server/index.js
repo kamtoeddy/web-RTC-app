@@ -7,7 +7,7 @@ const { PeerServer } = require("peer");
 const app = express();
 const httpServer = require("http").createServer(app);
 
-global.io = require("socket.io")(httpServer);
+global.io = require("socket.io")(httpServer, { port: 2000 });
 
 global.broadcasts = new Map();
 global.users = new Map();
@@ -19,11 +19,12 @@ global._getUserId = (key) => global.usersSocketToId.get(key);
 
 const { socketController } = require("./controllers/_socket");
 
+const peerServer = PeerServer({ port: 9000, path: "/peer-server" });
+
+app.use("/peer-server", peerServer);
+
 const port = process.env.PORT || 4000;
 httpServer.listen(port, async () => {
-  const peerServer = PeerServer({ port: 9000, path: "/myapp" });
-
-  peerServer.listen();
   console.log(`Server up and running @:${port}`);
 
   global.io.on("connection", socketController);
