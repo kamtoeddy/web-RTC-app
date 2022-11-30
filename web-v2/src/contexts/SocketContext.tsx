@@ -3,6 +3,8 @@ import { io, Socket } from "socket.io-client";
 
 import { useAuthCTX, User } from "./AuthContext";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 type EmitProps = {
   name: string;
   props?: Record<string, any>;
@@ -21,9 +23,7 @@ export const SocketContext = createContext<SocketCtxType>({} as SocketCtxType);
 const SocketContextProvider = ({ children }: any) => {
   const { user } = useAuthCTX();
 
-  const [socket] = useState(
-    io(process.env.NEXT_PUBLIC_BACKEND!, { transports: ["websocket"] })
-  );
+  const [socket] = useState(io(BACKEND_URL, { transports: ["websocket"] }));
 
   const [onlineUsers, setOnlineUsers] = useState<User[]>([]);
   const [isSocketConnected, setIsSocketConnected] = useState(false);
