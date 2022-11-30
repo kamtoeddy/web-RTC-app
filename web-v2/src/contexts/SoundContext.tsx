@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 const profiles = {
   default: "/audio/on-hold-ringtone-1361.wav",
@@ -7,13 +7,28 @@ const profiles = {
   "Line Busy": "/audio/Busysignal.mp3",
 };
 
-export const SoundContext = createContext();
+type SoundProfileType = keyof typeof profiles;
 
-const SoundContextProvider = ({ children }) => {
+type CallSoundType = {
+  play?: boolean;
+  profile?: SoundProfileType;
+  url?: string;
+};
+
+type SoundCtxType = {
+  callSound: CallSoundType;
+  playSound: (url: string) => void;
+  pauseSound: () => void;
+  setCallSound: (dt: CallSoundType) => void;
+};
+
+const SoundContext = createContext<SoundCtxType>({} as SoundCtxType);
+
+const SoundContextProvider = ({ children }: any) => {
   const [audio] = useState(new Audio());
-  const [callSound, set_CallSound] = useState({
+  const [callSound, set_CallSound] = useState<CallSoundType>({
     play: false,
-    profile: "",
+    profile: "default",
     url: profiles.default,
   });
 
@@ -30,21 +45,23 @@ const SoundContextProvider = ({ children }) => {
   }, [audio]);
 
   useEffect(() => {
-    callSound.play ? playSound(callSound.url) : pauseSound();
+    callSound.play ? playSound(callSound.url as string) : pauseSound();
   }, [callSound]);
 
-  const getSoundByProfile = ({ profile = "" }) => {
-    return profiles[profile] ?? profiles.default;
+  const getSoundByProfile = (profile: SoundProfileType = "default") => {
+    return profiles[profile];
   };
 
-  const setCallSound = ({ play = false, profile = "" } = { play: false }) => {
-    const _callSound = { play };
-    if (play) _callSound.url = getSoundByProfile({ profile });
+  const setCallSound = (
+    { play = false, profile = "default" }: CallSoundType = { play: false }
+  ) => {
+    const _callSound: CallSoundType = { play };
+    if (play) _callSound.url = getSoundByProfile(profile);
 
     set_CallSound(_callSound);
   };
 
-  const playSound = (url) => {
+  const playSound = (url: string) => {
     audio.src = url;
     audio?.play();
   };
@@ -59,3 +76,5 @@ const SoundContextProvider = ({ children }) => {
 };
 
 export default SoundContextProvider;
+
+export const useSoundCTX = () => useContext(SoundContext);
