@@ -11,12 +11,16 @@ type EmitProps = {
 
 type SocketCtxType = {
   emitEvent: (props: EmitProps) => void;
+  onlineUsers: User[];
   socket: Socket;
+  isSocketConnected: boolean;
 };
 
-export const SocketContext = createContext<SocketCtxType | null>(null);
+export const SocketContext = createContext<SocketCtxType>({} as SocketCtxType);
 
-const SocketContextProvider = ({ children }: any) => {
+const SocketContextProvider: React.FC<React.ReactNode> = ({
+  children,
+}: any) => {
   const { user } = useAuthCTX();
 
   const [socket] = useState(
@@ -24,10 +28,10 @@ const SocketContextProvider = ({ children }: any) => {
   );
 
   const [onlineUsers, setOnlineUsers] = useState<User[]>([]);
-  const [socketConnected, setSocketConnected] = useState(false);
+  const [isSocketConnected, setIsSocketConnected] = useState(false);
 
   const connectE = () => {
-    setSocketConnected(true);
+    setIsSocketConnected(true);
     socket.emit("register", user);
   };
 
@@ -45,7 +49,7 @@ const SocketContextProvider = ({ children }: any) => {
     setOnlineUsers((users) => [...users, user]);
 
   const disconnectE = () => {
-    setSocketConnected(false);
+    setIsSocketConnected(false);
     setOnlineUsers([]);
   };
 
@@ -79,7 +83,12 @@ const SocketContextProvider = ({ children }: any) => {
     socket.emit("_clientEvent", { name, props, rooms });
   };
 
-  const context = { emitEvent, onlineUsers, socket, socketConnected };
+  const context = {
+    emitEvent,
+    onlineUsers,
+    socket,
+    isSocketConnected,
+  };
 
   return (
     <SocketContext.Provider value={context}>{children}</SocketContext.Provider>
@@ -88,4 +97,4 @@ const SocketContextProvider = ({ children }: any) => {
 
 export default SocketContextProvider;
 
-export const useSocketCTX = useContext(SocketContext);
+export const useSocketCTX = () => useContext(SocketContext);
