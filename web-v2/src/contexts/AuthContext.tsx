@@ -3,7 +3,7 @@ import React, { createContext, useContext } from "react";
 // helper modules
 import { faker } from "@faker-js/faker";
 
-type User = {
+export type User = {
   id: string;
   name: string;
 };
@@ -22,4 +22,4 @@ const AuthContextProvider: React.FC<React.ReactNode> = ({ children }: any) => {
 
 export default AuthContextProvider;
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuthCTX = () => useContext(AuthContext);

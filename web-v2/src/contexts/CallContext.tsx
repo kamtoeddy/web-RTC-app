@@ -2,17 +2,14 @@ import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { Peer } from "peerjs";
 
 // contexts
-import { AuthContext } from "./AuthContext";
+import { useAuthCTX } from "./AuthContext";
 import { SocketContext } from "./SocketContext";
 import { SoundContext } from "./SoundContext";
 
-// rtc configs
-import RTCSettings from "../public/rtc-settings";
-
 export const CallContext = createContext();
 
-const CallContextProvider = ({ children }) => {
-  const { user } = useContext(AuthContext);
+const CallContextProvider = ({ children }: any) => {
+  const { user } = useAuthCTX();
   const { emitEvent, socket } = useContext(SocketContext);
   const { setCallSound } = useContext(SoundContext);
 

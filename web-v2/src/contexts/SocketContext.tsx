@@ -1,18 +1,29 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { io } from "socket.io-client";
+import { io, Socket } from "socket.io-client";
 
-import { AuthContext } from "./AuthContext";
+import { useAuthCTX, User } from "./AuthContext";
 
-export const SocketContext = createContext();
+type EmitProps = {
+  name: string;
+  props: Record<string, any>;
+  rooms: string[];
+};
 
-const SocketContextProvider = ({ children }) => {
-  const { user } = useContext(AuthContext);
+type SocketCtxType = {
+  emitEvent: (props: EmitProps) => void;
+  socket: Socket;
+};
+
+export const SocketContext = createContext<SocketCtxType | null>(null);
+
+const SocketContextProvider = ({ children }: any) => {
+  const { user } = useAuthCTX();
 
   const [socket] = useState(
-    io(process.env.NEXT_PUBLIC_BACKEND, { transports: ["websocket"] })
+    io(process.env.NEXT_PUBLIC_BACKEND!, { transports: ["websocket"] })
   );
 
-  const [onlineUsers, setOnlineUsers] = useState([]);
+  const [onlineUsers, setOnlineUsers] = useState<User[]>([]);
   const [socketConnected, setSocketConnected] = useState(false);
 
   const connectE = () => {
@@ -20,17 +31,18 @@ const SocketContextProvider = ({ children }) => {
     socket.emit("register", user);
   };
 
-  const onlineUsersE = (users) => {
+  const onlineUsersE = (users: User[]) => {
     // On users update listener
     setOnlineUsers(users);
   };
 
-  const userOfflineE = ({ _id }) => {
+  const userOfflineE = ({ id }: any) => {
     // On users update listener
-    setOnlineUsers((users) => users.filter(({ _id: id }) => id !== _id));
+    setOnlineUsers((users) => users.filter(({ id }) => id !== id));
   };
 
-  const userOnlineE = (user) => setOnlineUsers((users) => [...users, user]);
+  const userOnlineE = (user: User) =>
+    setOnlineUsers((users) => [...users, user]);
 
   const disconnectE = () => {
     setSocketConnected(false);
@@ -63,7 +75,7 @@ const SocketContextProvider = ({ children }) => {
     };
   }, [socket]);
 
-  const emitEvent = ({ name, props = {}, rooms = [] }) => {
+  const emitEvent = ({ name, props = {}, rooms = [] }: EmitProps) => {
     socket.emit("_clientEvent", { name, props, rooms });
   };
 
@@ -75,3 +87,5 @@ const SocketContextProvider = ({ children }) => {
 };
 
 export default SocketContextProvider;
+
+export const useSocketCTX = useContext(SocketContext);
