@@ -1,12 +1,11 @@
-import { useContext } from "react";
 import { AppBar as AppBar_, Avatar, Toolbar, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 
 // contexts
-import { AuthContext } from "../contexts/AuthContext";
-import { SocketContext } from "../contexts/SocketContext";
+import { useAuthCTX } from "../contexts/AuthContext";
+import { useSocketCTX } from "../contexts/SocketContext";
 
-const useStyles = makeStyles((theme) => {
+const useStyles = makeStyles((theme: any) => {
   return {
     appBar: {
       color: "black",
@@ -17,6 +16,7 @@ const useStyles = makeStyles((theme) => {
       display: "flex",
       alignItems: "center",
       justifyContent: "flex-end",
+      backgroundColor: "white",
       // necessary for content to be below app bar
       ...theme.mixins.toolbar,
     },
@@ -38,8 +38,8 @@ const useStyles = makeStyles((theme) => {
 function AppBar() {
   const classes = useStyles();
 
-  const { user } = useContext(AuthContext);
-  const { socketConnected } = useContext(SocketContext);
+  const { user } = useAuthCTX();
+  const { isSocketConnected } = useSocketCTX();
 
   return (
     <>
@@ -50,7 +50,7 @@ function AppBar() {
           <div className={classes.presence_parent}>
             <div
               className={`${classes.presence_dot} ${
-                socketConnected && classes.presence_online
+                isSocketConnected && classes.presence_online
               }`}
             />
 

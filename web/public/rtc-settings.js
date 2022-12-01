@@ -3,11 +3,14 @@ const config = {
     iceServers: [
       {
         urls: [process.env.NEXT_PUBLIC_STUN_SERVER_HOST],
+      },
+      {
+        urls: [process.env.NEXT_PUBLIC_TURN_SERVER_HOST],
         username: process.env.NEXT_PUBLIC_TURN_SERVER_USERNAME,
         credential: process.env.NEXT_PUBLIC_TURN_SERVER_PASSWORD,
       },
       {
-        urls: [process.env.NEXT_PUBLIC_TURN_SERVER_HOST],
+        urls: [`${process.env.NEXT_PUBLIC_TURN_SERVER_HOST}?transport=tcp`],
         username: process.env.NEXT_PUBLIC_TURN_SERVER_USERNAME,
         credential: process.env.NEXT_PUBLIC_TURN_SERVER_PASSWORD,
       },

@@ -2,75 +2,51 @@ const { handleEvent } = require("./_clientEvent");
 
 const onlineUsersRoom = "room-online_users";
 
-global._updateUser = ({ _id, ...changes }) => {
-  const user = global._getUser(_id);
+global._updateUser = ({ id, ...changes }) => {
+  const user = global._getUser(id);
 
   if (!user) return;
 
-  global.users.set(_id, { ...user, ...changes });
+  global.users.set(id, { ...user, ...changes });
 };
 
-const _removeUser = (_id, conn) => {
-  const user = global._getUser(_id);
+const _removeUser = (id) => {
+  const user = global._getUser(id);
 
   if (!user) return;
 
-  let conns = user.conns.filter((_conn) => _conn !== conn);
-
-  if (conns.length) return _updateUser({ _id, conns });
-
-  global.users.delete(_id);
-
-  global.emitEvent({
-    name: "User offline",
-    data: { _id },
-    rooms: [onlineUsersRoom],
-  });
+  global.users.delete(id);
 };
 
 const getOnlineUsers = () => {
-  return Array.from(users.values()).map(({ _id, name, conn }) => ({
-    _id,
+  return Array.from(users.values()).map(({ id, name, conn }) => ({
+    id,
     name,
     conn,
   }));
 };
 
-const updateOnlineUsers = (socket) => {
+const updateOnlineUsers = () => {
   const onlineUsers = getOnlineUsers();
 
   global.emitEvent({
     name: "Online Users",
     data: onlineUsers,
-    rooms: [socket.id],
+    rooms: [onlineUsersRoom],
   });
 };
 
 function socketController(socket) {
-  socket.on("register", ({ _id, name }) => {
-    let user = global._getUser(_id);
+  socket.on("register", ({ id, name }) => {
+    global.users.set(id, { id, name, socketId: socket.id });
 
-    if (user) {
-      _updateUser({ _id, conns: [...user.conns, socket.id] });
-    } else {
-      global.users.set(_id, { _id, name, conns: [socket.id] });
-    }
+    global.usersSocketToId.set(socket.id, id);
 
-    global.usersSocketToId.set(socket.id, _id);
-
-    socket.join(_id);
-
-    if (!user) {
-      global.emitEvent({
-        name: "User online",
-        data: { _id, name },
-        rooms: [onlineUsersRoom],
-      });
-    }
+    socket.join(id);
 
     socket.join(onlineUsersRoom);
 
-    updateOnlineUsers(socket);
+    updateOnlineUsers();
   });
 
   socket.on("Get online users", updateOnlineUsers);
@@ -86,6 +62,8 @@ function socketController(socket) {
     if (!userId) return;
 
     _removeUser(userId, socket.id);
+
+    updateOnlineUsers();
   });
 }
 
