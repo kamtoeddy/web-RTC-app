@@ -1,3 +1,5 @@
+import { lazy } from "react";
+
 // contexts
 import { useAuthCTX } from "./contexts/AuthContext";
 import { useCallCTX } from "./contexts/CallContext";
@@ -5,9 +7,11 @@ import { useSocketCTX } from "./contexts/SocketContext";
 
 // components
 import AppBar from "./components/AppBar";
-import IncommingCallScreen from "./components/IncommingCallScreen";
-import OnlineUsers from "./components/OnlineUsers";
-import VideoCallScreen from "./components/VideoCallScreen";
+const IncommingCallScreen = lazy(
+  () => import("./components/IncommingCallScreen")
+);
+const OnlineUsers = lazy(() => import("./components/OnlineUsers"));
+const VideoCallScreen = lazy(() => import("./components/VideoCallScreen"));
 
 function App() {
   const { user } = useAuthCTX();

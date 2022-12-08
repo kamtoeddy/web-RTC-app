@@ -60,7 +60,7 @@ const CallContextProvider = ({ children }: any) => {
   const [isOnCall, setIsOnCall] = useState(false);
   const [isCallConnected, setIsCallConnected] = useState(false);
   const [isIncommingCall, setIsIncommingCall] = useState(false);
-  const [myPeer] = useState(new Peer(user.id, peerConfig));
+  const [myPeer] = useState(new Peer(user.id));
 
   // video streams
   const [localStream, setLocalStream] = useState<MediaStream>();
