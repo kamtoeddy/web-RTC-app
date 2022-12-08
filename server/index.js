@@ -2,13 +2,12 @@ if (process.env.NODE_ENV !== "production") require("dotenv").config();
 
 const cors = require("cors");
 const express = require("express");
+const { PeerServer } = require("peer");
 
 const app = express();
 const httpServer = require("http").createServer(app);
 
-global.io = require("socket.io")(httpServer, {
-  cors: { origin: process.env.FRONT_END },
-});
+global.io = require("socket.io")(httpServer, { port: 2000 });
 
 global.broadcasts = new Map();
 global.users = new Map();
@@ -19,6 +18,10 @@ global._getUser = (key) => global.users.get(key);
 global._getUserId = (key) => global.usersSocketToId.get(key);
 
 const { socketController } = require("./controllers/_socket");
+
+const peerServer = PeerServer({ port: 9000, path: "/peer-server" });
+
+app.use("/peer-server", peerServer);
 
 const port = process.env.PORT || 4000;
 httpServer.listen(port, async () => {

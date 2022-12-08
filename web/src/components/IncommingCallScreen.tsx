@@ -5,8 +5,13 @@ import Fab from "@mui/material/Fab";
 import { green, red } from "@mui/material/colors";
 import CallIcon from "@mui/icons-material/Call";
 import CallEndIcon from "@mui/icons-material/CallEnd";
+import { CallContextType } from "../contexts/CallContext";
 
-const IncommingCallScreen = ({ correspondent, acceptCall, endCall }) => {
+const IncommingCallScreen = ({
+  correspondent,
+  acceptCall,
+  endCall,
+}: Partial<CallContextType>) => {
   return (
     <div className={styles.incommingCallParent}>
       <div className="info">{correspondent?.name} is calling</div>
@@ -19,7 +24,7 @@ const IncommingCallScreen = ({ correspondent, acceptCall, endCall }) => {
             bgcolor: green[500],
             "&:hover": { bgcolor: green[600] },
           }}
-          onClick={() => acceptCall(correspondent)}
+          onClick={() => acceptCall!(correspondent!)}
         >
           <CallIcon />
         </Fab>
@@ -31,7 +36,7 @@ const IncommingCallScreen = ({ correspondent, acceptCall, endCall }) => {
             bgcolor: red[500],
             "&:hover": { bgcolor: red[600] },
           }}
-          onClick={() => endCall(correspondent)}
+          onClick={() => endCall!(correspondent)}
         >
           <CallEndIcon />
         </Fab>
