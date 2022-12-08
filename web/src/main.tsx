@@ -1,18 +1,18 @@
-import React from "react";
+import { StrictMode, lazy } from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App";
+const App = lazy(() => import("./App"));
 
 // context providers
-import AuthContextProvider from "./contexts/AuthContext";
-import CallContextProvider from "./contexts/CallContext";
-import SocketContextProvider from "./contexts/SocketContext";
-import SoundContextProvider from "./contexts/SoundContext";
-import ThemeContextProvider from "./contexts/ThemeContext";
+const AuthContextProvider = lazy(() => import("./contexts/AuthContext"));
+const CallContextProvider = lazy(() => import("./contexts/CallContext"));
+const SocketContextProvider = lazy(() => import("./contexts/SocketContext"));
+const SoundContextProvider = lazy(() => import("./contexts/SoundContext"));
+const ThemeContextProvider = lazy(() => import("./contexts/ThemeContext"));
 
 import "./index.css";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <React.StrictMode>
+  <StrictMode>
     <SoundContextProvider>
       <AuthContextProvider>
         <SocketContextProvider>
@@ -24,5 +24,5 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
         </SocketContextProvider>
       </AuthContextProvider>
     </SoundContextProvider>
-  </React.StrictMode>
+  </StrictMode>
 );
