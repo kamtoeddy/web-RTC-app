@@ -1,6 +1,5 @@
 import { createContext, useContext } from 'react';
 
-// helper modules
 import { faker } from '@faker-js/faker';
 
 export type User = {
@@ -10,7 +9,7 @@ export type User = {
 
 type AuthContextType = { user: User };
 
-const user = { name: faker.name.firstName(), id: faker.datatype.uuid() };
+const user = { name: faker.person.firstName(), id: faker.string.uuid() };
 
 const AuthContext = createContext<AuthContextType>({ user });
 
