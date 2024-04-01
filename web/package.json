@@ -1,5 +1,5 @@
 {
-  "name": "web-v2",
+  "name": "web",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -9,14 +9,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@emotion/react": "^11.4.1",
-    "@emotion/styled": "^11.3.0",
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
     "@faker-js/faker": "^7.6.0",
-    "@mui/icons-material": "^5.0.5",
-    "@mui/material": "^5.0.1",
-    "@mui/styles": "^5.0.2",
-    "axios": "^0.28.0",
-    "peerjs": "^1.4.7",
+    "@mui/icons-material": "^5.15.14",
+    "@mui/material": "^5.15.14",
+    "@mui/styles": "^5.15.14",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "sass": "^1.50.0",
@@ -24,9 +22,9 @@
   },
   "devDependencies": {
     "@types/faker": "^6.6.9",
-    "@types/node": "^18.11.9",
-    "@types/react": "^18.0.24",
-    "@types/react-dom": "^18.0.8",
+    "@types/node": "^18.19.28",
+    "@types/react": "^18.2.73",
+    "@types/react-dom": "^18.2.23",
     "@vitejs/plugin-react": "^2.2.0",
     "typescript": "^4.6.4",
     "vite": "^3.2.8"
