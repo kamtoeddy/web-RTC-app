@@ -1,13 +1,14 @@
-import { createTheme, ThemeProvider } from "@mui/material";
+import { createTheme, ThemeProvider } from '@mui/material';
+import { ReactNode } from 'react';
 
 const theme = createTheme({
   palette: {
     primary: {
-      main: "#eee",
+      main: '#eee',
     },
   },
   typography: {
-    fontFamily: "Quicksand",
+    fontFamily: 'Quicksand',
     fontWeightLight: 400,
     fontWeightRegular: 500,
     fontWeightMedium: 600,
@@ -15,8 +16,10 @@ const theme = createTheme({
   },
 });
 
-const ThemeContextProvider = ({ children }: any) => {
+export default function ThemeContextProvider({
+  children,
+}: {
+  children: ReactNode;
+}) {
   return <ThemeProvider theme={theme}>{children}</ThemeProvider>;
-};
-
-export default ThemeContextProvider;
+}

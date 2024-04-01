@@ -1,4 +1,10 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import { io, Socket } from 'socket.io-client';
 
 import { useAuthCTX, User } from './AuthContext';
@@ -27,8 +33,13 @@ type SocketCtxType = {
 };
 
 export const SocketContext = createContext<SocketCtxType>({} as SocketCtxType);
+export const useSocketCTX = () => useContext(SocketContext);
 
-const SocketContextProvider = ({ children }: any) => {
+export default function SocketContextProvider({
+  children,
+}: {
+  children: ReactNode;
+}) {
   const { user } = useAuthCTX();
 
   const [socket] = useState(
@@ -99,8 +110,4 @@ const SocketContextProvider = ({ children }: any) => {
   return (
     <SocketContext.Provider value={context}>{children}</SocketContext.Provider>
   );
-};
-
-export default SocketContextProvider;
-
-export const useSocketCTX = () => useContext(SocketContext);
+}

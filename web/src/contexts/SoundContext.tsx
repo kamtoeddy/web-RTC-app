@@ -1,4 +1,10 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import {
+  ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 
 const profiles = {
   default: '/audio/on-hold-ringtone-1361.wav',
@@ -23,8 +29,13 @@ type SoundCtxType = {
 };
 
 const SoundContext = createContext<SoundCtxType>({} as SoundCtxType);
+export const useSoundCTX = () => useContext(SoundContext);
 
-const SoundContextProvider = ({ children }: any) => {
+export default function SoundContextProvider({
+  children,
+}: {
+  children: ReactNode;
+}) {
   const audio = useState(new Audio())[0];
   const [callSound, set_CallSound] = useState<CallSoundType>({
     play: false,
@@ -73,8 +84,4 @@ const SoundContextProvider = ({ children }: any) => {
   return (
     <SoundContext.Provider value={context}>{children}</SoundContext.Provider>
   );
-};
-
-export default SoundContextProvider;
-
-export const useSoundCTX = () => useContext(SoundContext);
+}

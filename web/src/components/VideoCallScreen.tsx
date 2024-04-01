@@ -1,30 +1,32 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef } from 'react';
 
-import styles from "./videoCallStyles.module.scss";
+import styles from './videoCallStyles.module.scss';
 
-// mui icons
-import Fab from "@mui/material/Fab";
-import { red } from "@mui/material/colors";
-import CallEndIcon from "@mui/icons-material/CallEnd";
-import VideocamIcon from "@mui/icons-material/Videocam";
-import VideocamOffIcon from "@mui/icons-material/VideocamOff";
-import MicIcon from "@mui/icons-material/Mic";
-import MicOffIcon from "@mui/icons-material/MicOff";
+import Fab from '@mui/material/Fab';
+import { Tooltip } from '@mui/material';
+import { red } from '@mui/material/colors';
+import MicIcon from '@mui/icons-material/Mic';
+import MicOffIcon from '@mui/icons-material/MicOff';
+import CallEndIcon from '@mui/icons-material/CallEnd';
+import VideocamIcon from '@mui/icons-material/Videocam';
+import VideocamOffIcon from '@mui/icons-material/VideocamOff';
 
-import { CallContextType } from "../contexts/CallContext";
+// contexts
+import { useCallCTX } from '../contexts/CallContext';
 
-const VideoCallScreen = ({
-  correspondent,
-  localStream,
-  remoteStream,
-  isCallConnected,
-  callStatus,
-  isAudioOn,
-  isVideoOn,
-  toggleVideo,
-  toggleAudio,
-  endCall,
-}: Partial<CallContextType>) => {
+const VideoCallScreen = () => {
+  const {
+    callStatus,
+    correspondent,
+    localStream,
+    remoteStream,
+    isCallConnected,
+    isAudioOn,
+    isVideoOn,
+    endCall,
+    toggleAudio,
+    toggleVideo,
+  } = useCallCTX();
   const localVideoRef = useRef<HTMLVideoElement>();
   const remoteVideoRef = useRef<HTMLVideoElement>();
 
@@ -58,30 +60,34 @@ const VideoCallScreen = ({
         <Fab
           className={styles.btn}
           sx={{
-            color: "white",
+            color: 'white',
             bgcolor: red[500],
-            "&:hover": { bgcolor: red[600] },
+            '&:hover': { bgcolor: red[600] },
           }}
           onClick={() => endCall?.(correspondent)}
         >
           <CallEndIcon />
         </Fab>
 
-        <Fab
-          className={styles.btn}
-          sx={{ "&:hover": { color: "white", bgcolor: red[600] } }}
-          onClick={toggleVideo}
-        >
-          {isVideoOn ? <VideocamOffIcon /> : <VideocamIcon />}
-        </Fab>
+        <Tooltip title={`Turn your video ${isVideoOn ? 'off' : 'on'}`}>
+          <Fab
+            className={styles.btn}
+            sx={{ '&:hover': { color: 'white', bgcolor: red[600] } }}
+            onClick={toggleVideo}
+          >
+            {isVideoOn ? <VideocamOffIcon /> : <VideocamIcon />}
+          </Fab>
+        </Tooltip>
 
-        <Fab
-          className={styles.btn}
-          sx={{ "&:hover": { color: "white", bgcolor: red[600] } }}
-          onClick={toggleAudio}
-        >
-          {isAudioOn ? <MicOffIcon /> : <MicIcon />}
-        </Fab>
+        <Tooltip title={`Turn your audio ${isAudioOn ? 'off' : 'on'}`}>
+          <Fab
+            className={styles.btn}
+            sx={{ '&:hover': { color: 'white', bgcolor: red[600] } }}
+            onClick={toggleAudio}
+          >
+            {isAudioOn ? <MicOffIcon /> : <MicIcon />}
+          </Fab>
+        </Tooltip>
       </div>
     </div>
   );

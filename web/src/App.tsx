@@ -1,74 +1,28 @@
-import { lazy } from "react";
+import { lazy } from 'react';
 
 // contexts
-import { useAuthCTX } from "./contexts/AuthContext";
-import { useCallCTX } from "./contexts/CallContext";
-import { useSocketCTX } from "./contexts/SocketContext";
+import { useCallCTX } from './contexts/CallContext';
 
 // components
-import AppBar from "./components/AppBar";
+import AppBar from './components/AppBar';
 const IncommingCallScreen = lazy(
-  () => import("./components/IncommingCallScreen")
+  () => import('./components/IncommingCallScreen'),
 );
-const OnlineUsers = lazy(() => import("./components/OnlineUsers"));
-const VideoCallScreen = lazy(() => import("./components/VideoCallScreen"));
+const OnlineUsersList = lazy(() => import('./components/OnlineUsersList'));
+const VideoCallScreen = lazy(() => import('./components/VideoCallScreen'));
 
-function App() {
-  const { user } = useAuthCTX();
-  const {
-    acceptCall,
-    callStatus,
-    correspondent,
-    endCall,
-    makeCall,
-    localStream,
-    remoteStream,
-    isCallConnected,
-    isIncommingCall,
-    isOnCall,
-    isAudioOn,
-    isVideoOn,
-    toggleAudio,
-    toggleVideo,
-  } = useCallCTX()!;
+export default function App() {
+  const { isOnIncommingCall, isOnCall } = useCallCTX();
 
-  const { onlineUsers } = useSocketCTX();
   return (
     <div className="App">
       <AppBar />
 
-      {isOnCall && (
-        <VideoCallScreen
-          correspondent={correspondent}
-          localStream={localStream}
-          remoteStream={remoteStream}
-          isCallConnected={isCallConnected}
-          callStatus={callStatus}
-          isVideoOn={isVideoOn}
-          isAudioOn={isAudioOn}
-          endCall={endCall}
-          toggleVideo={toggleVideo}
-          toggleAudio={toggleAudio}
-        />
-      )}
+      {isOnCall && <VideoCallScreen />}
 
-      {!isOnCall && isIncommingCall && (
-        <IncommingCallScreen
-          acceptCall={acceptCall}
-          endCall={endCall}
-          correspondent={correspondent}
-        />
-      )}
+      {!isOnCall && isOnIncommingCall && <IncommingCallScreen />}
 
-      {!isOnCall && !isIncommingCall && (
-        <OnlineUsers
-          onlineUsers={onlineUsers}
-          myId={user.id}
-          makeCall={makeCall}
-        />
-      )}
+      {!isOnCall && !isOnIncommingCall && <OnlineUsersList />}
     </div>
   );
 }
-
-export default App;

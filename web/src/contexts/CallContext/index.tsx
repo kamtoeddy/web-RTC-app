@@ -1,12 +1,19 @@
-import { createContext, useContext, useEffect, useRef, useState } from 'react';
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 
 // contexts
-import { useAuthCTX, User } from './AuthContext';
-import { useSocketCTX } from './SocketContext';
-import { useSoundCTX } from './SoundContext';
+import { useAuthCTX, User } from '../AuthContext';
+import { useSocketCTX } from '../SocketContext';
+import { useSoundCTX } from '../SoundContext';
 
 // rtc configs
-import { RTCIceServers } from './rtc-settings';
+import { MEDIA_CONSTRAINTS, RTC_ICE_SERVERS } from './rtc-settings';
 
 type CallStatusType = '' | 'Calling' | 'Connected' | 'Line Busy' | 'Ringing';
 
@@ -15,7 +22,7 @@ export type CallContextType = {
   correspondent?: User;
   isAudioOn: boolean;
   isCallConnected: boolean;
-  isIncommingCall: boolean;
+  isOnIncommingCall: boolean;
   isOnCall: boolean;
   isVideoOn: boolean;
   localStream: MediaStream | null;
@@ -28,33 +35,30 @@ export type CallContextType = {
   toggleVideo: () => void;
 };
 
-const MEDIA_CONSTRAINTS = {
-  video: {
-    frameRate: { min: 24, ideal: 30, max: 60 },
-    width: { min: 480, ideal: 720, max: 1280 },
-    height: 'auto',
-    aspectRatio: 1.33333,
-  },
-  audio: {
-    echoCancellation: true,
-    noiseSuppression: true,
-  },
-} as MediaStreamConstraints;
-
-export const CallContext = createContext<CallContextType | null>(null);
+export const CallContext = createContext<CallContextType>(
+  {} as CallContextType,
+);
+export const useCallCTX = () => useContext(CallContext);
 
 type IceInfo = { correspondent_id: string; ice: RTCIceCandidate };
 type CallSDPInfo = User & { sdp: RTCSessionDescription };
 
-const CallContextProvider = ({ children }: any) => {
+export default function CallContextProvider({
+  children,
+}: {
+  children: ReactNode;
+}) {
   const { user } = useAuthCTX();
-  const { emitEvent, socket } = useSocketCTX();
   const { setCallSound } = useSoundCTX();
+  const { emitEvent, socket } = useSocketCTX();
 
   const [isOnCall, setIsOnCall] = useState(false);
-  const [isCallConnected, setIsCallConnected] = useState(false);
-  const [isIncommingCall, setIsIncommingCall] = useState(false);
+  const [isVideoOn, setIsVideoOn] = useState(true);
+  const [isAudioOn, setIsAudioOn] = useState(true);
   const [correspondent, setCorrespondent] = useState<User>();
+  const [isCallConnected, setIsCallConnected] = useState(false);
+  const [isOnIncommingCall, setIsOnIncommingCall] = useState(false);
+  const [callStatus, setCallStatus] = useState<CallStatusType>('');
 
   // rtc state data
   const [remoteSdp, setRemoteSdp] = useState<RTCSessionDescription | null>(
@@ -65,18 +69,11 @@ const CallContextProvider = ({ children }: any) => {
   const iceCandidatesRef = useRef<IceInfo[]>([]);
   const peerConnRef = useRef<RTCPeerConnection | null>(null);
 
-  const callRangRef = useRef(false);
-
+  // using references here because data gets losts with stateful values
   const localStreamRef = useRef<MediaStream | null>(null);
   const remoteStreamRef = useRef<MediaStream | null>(null);
 
-  const [callStatus, setCallStatus] = useState<CallStatusType>('');
-
-  const [isVideoOn, setIsVideoOn] = useState(true);
-  const [isAudioOn, setIsAudioOn] = useState(true);
-
   const releaseMediaResources = () => {
-    // using references here because this function is also passed in useEffect
     localStreamRef.current?.getTracks().forEach((track) => track.stop());
     remoteStreamRef.current?.getTracks().forEach((track) => track.stop());
     peerConnRef.current?.close();
@@ -84,7 +81,7 @@ const CallContextProvider = ({ children }: any) => {
   };
 
   const createPeer = async (correspondent: User) => {
-    const _peer = new RTCPeerConnection({ iceServers: RTCIceServers });
+    const _peer = new RTCPeerConnection({ iceServers: RTC_ICE_SERVERS });
 
     const dataStream = await navigator.mediaDevices.getUserMedia(
       MEDIA_CONSTRAINTS,
@@ -96,7 +93,6 @@ const CallContextProvider = ({ children }: any) => {
 
     _peer.onconnectionstatechange = () => {
       if (_peer.connectionState !== 'new')
-        // TODO update type here
         setCallStatus(_peer.connectionState as any);
 
       if (_peer.connectionState !== 'connected') setIsCallConnected(false);
@@ -186,17 +182,16 @@ const CallContextProvider = ({ children }: any) => {
     setCallStatus('');
     setCallSound();
     setCorrespondent(caller);
-    setIsIncommingCall(false);
+    setIsOnIncommingCall(false);
     setIsOnCall(true);
   };
 
   const endCall = (correspondent?: User) => {
-    if (correspondent && callRangRef.current) {
+    if (correspondent)
       emitEvent({ name: 'cE-call-ended', rooms: [correspondent.id] });
-    }
+
     releaseMediaResources();
 
-    callRangRef.current = false;
     iamCallerRef.current = false;
     iceCandidatesRef.current = [];
     peerConnRef.current = null;
@@ -213,28 +208,28 @@ const CallContextProvider = ({ children }: any) => {
     setIsVideoOn(true);
     setIsAudioOn(true);
     setIsCallConnected(false);
-    setIsIncommingCall(false);
+    setIsOnIncommingCall(false);
     setCorrespondent(undefined);
-  };
-
-  const toggleVideo = () => {
-    if (!localStreamRef.current) return;
-
-    localStreamRef.current.getVideoTracks()[0].enabled = !isVideoOn;
-    setIsVideoOn(!isVideoOn);
   };
 
   const toggleAudio = () => {
     if (!localStreamRef.current) return;
 
-    localStreamRef.current.getAudioTracks()[0].enabled = !isAudioOn;
-    setIsAudioOn(!isAudioOn);
+    const enabled = !isAudioOn;
+    localStreamRef.current.getAudioTracks()[0].enabled = enabled;
+    setIsAudioOn(enabled);
+  };
+
+  const toggleVideo = () => {
+    if (!localStreamRef.current) return;
+
+    const enabled = !isVideoOn;
+    localStreamRef.current.getVideoTracks()[0].enabled = enabled;
+    setIsVideoOn(enabled);
   };
 
   // socket listeners
-  const onCallAccepted = async (data: CallSDPInfo) => {
-    callRangRef.current = true;
-
+  async function onCallAccepted(data: CallSDPInfo) {
     await peerConnRef.current?.setRemoteDescription(
       new RTCSessionDescription(data.sdp),
     );
@@ -249,11 +244,11 @@ const CallContextProvider = ({ children }: any) => {
 
     setCallSound();
     setCallStatus('');
-  };
+  }
 
   const onCallEnded = () => endCall();
 
-  const onCorrespondentIce = async ({ correspondent_id, ice }: IceInfo) => {
+  async function onCorrespondentIce({ correspondent_id, ice }: IceInfo) {
     if (iamCallerRef.current && peerConnRef.current?.remoteDescription)
       return peerConnRef.current.addIceCandidate(new RTCIceCandidate(ice));
 
@@ -268,30 +263,28 @@ const CallContextProvider = ({ children }: any) => {
       ...iceCandidatesRef.current,
       { correspondent_id, ice },
     ];
-  };
+  }
 
-  const onLineBusy = () => {
+  function onLineBusy() {
     setCallSound({ play: true, profile: 'Line Busy' });
     setCallStatus('Line Busy');
-  };
+  }
 
-  const onRinging = () => {
-    callRangRef.current = true;
+  function onRinging() {
     setCallStatus('Ringing');
-  };
+  }
 
-  const onIncommingCall = (caller: CallSDPInfo) => {
-    if (isOnCall || isIncommingCall)
+  function onIncommingCall(caller: CallSDPInfo) {
+    if (isOnCall || isOnIncommingCall)
       return emitEvent({ name: 'cE-call-line busy', rooms: [caller.id] });
 
-    callRangRef.current = true;
     emitEvent({ name: 'cE-call-ringing', rooms: [caller.id] });
 
     setCallSound({ play: true, profile: 'Incomming Call' });
     setRemoteSdp(caller.sdp);
-    setIsIncommingCall(true);
+    setIsOnIncommingCall(true);
     setCorrespondent(caller);
-  };
+  }
 
   useEffect(() => {
     socket.on('cE-call-accepted', onCallAccepted);
@@ -328,7 +321,7 @@ const CallContextProvider = ({ children }: any) => {
     correspondent,
     isAudioOn,
     isCallConnected,
-    isIncommingCall,
+    isOnIncommingCall,
     isOnCall,
     isVideoOn,
     localStream: localStreamRef.current,
@@ -344,8 +337,4 @@ const CallContextProvider = ({ children }: any) => {
   return (
     <CallContext.Provider value={context}>{children}</CallContext.Provider>
   );
-};
-
-export default CallContextProvider;
-
-export const useCallCTX = () => useContext(CallContext);
+}
