@@ -1,10 +1,10 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from 'react';
 
 const profiles = {
-  default: "/audio/on-hold-ringtone-1361.wav",
-  "Incomming Call": "/audio/waiting-ringtone-1354.wav",
-  "Outgoing Call": "/audio/UKphoneringing.mp3",
-  "Line Busy": "/audio/Busysignal.mp3",
+  default: '/audio/on-hold-ringtone-1361.wav',
+  'Incomming Call': '/audio/waiting-ringtone-1354.wav',
+  'Outgoing Call': '/audio/UKphoneringing.mp3',
+  'Line Busy': '/audio/Busysignal.mp3',
 };
 
 type SoundProfileType = keyof typeof profiles;
@@ -25,10 +25,10 @@ type SoundCtxType = {
 const SoundContext = createContext<SoundCtxType>({} as SoundCtxType);
 
 const SoundContextProvider = ({ children }: any) => {
-  const [audio] = useState(new Audio());
+  const audio = useState(new Audio())[0];
   const [callSound, set_CallSound] = useState<CallSoundType>({
     play: false,
-    profile: "default",
+    profile: 'default',
     url: profiles.default,
   });
 
@@ -37,10 +37,10 @@ const SoundContextProvider = ({ children }: any) => {
   useEffect(() => {
     if (!audio) return;
 
-    audio.addEventListener("ended", onSoundEnded);
+    audio.addEventListener('ended', onSoundEnded);
 
     return () => {
-      audio.removeEventListener("ended", onSoundEnded);
+      audio.removeEventListener('ended', onSoundEnded);
     };
   }, [audio]);
 
@@ -48,12 +48,12 @@ const SoundContextProvider = ({ children }: any) => {
     callSound.play ? playSound(callSound.url as string) : pauseSound();
   }, [callSound]);
 
-  const getSoundByProfile = (profile: SoundProfileType = "default") => {
+  const getSoundByProfile = (profile: SoundProfileType = 'default') => {
     return profiles[profile];
   };
 
   const setCallSound = (
-    { play = false, profile = "default" }: CallSoundType = { play: false }
+    { play = false, profile = 'default' }: CallSoundType = { play: false },
   ) => {
     const _callSound: CallSoundType = { play };
     if (play) _callSound.url = getSoundByProfile(profile);

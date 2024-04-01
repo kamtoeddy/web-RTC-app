@@ -1,28 +1,30 @@
-import { StrictMode, lazy } from "react";
-import ReactDOM from "react-dom/client";
-const App = lazy(() => import("./App"));
+import { StrictMode, Suspense, lazy } from 'react';
+import ReactDOM from 'react-dom/client';
+const App = lazy(() => import('./App'));
 
 // context providers
-const AuthContextProvider = lazy(() => import("./contexts/AuthContext"));
-const CallContextProvider = lazy(() => import("./contexts/CallContext"));
-const SocketContextProvider = lazy(() => import("./contexts/SocketContext"));
-const SoundContextProvider = lazy(() => import("./contexts/SoundContext"));
-const ThemeContextProvider = lazy(() => import("./contexts/ThemeContext"));
+const AuthContextProvider = lazy(() => import('./contexts/AuthContext'));
+const CallContextProvider = lazy(() => import('./contexts/CallContext'));
+const SocketContextProvider = lazy(() => import('./contexts/SocketContext'));
+const SoundContextProvider = lazy(() => import('./contexts/SoundContext'));
+const ThemeContextProvider = lazy(() => import('./contexts/ThemeContext'));
 
-import "./index.css";
+import './index.css';
 
-ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
+ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <StrictMode>
-    <SoundContextProvider>
-      <AuthContextProvider>
-        <SocketContextProvider>
-          <CallContextProvider>
-            <ThemeContextProvider>
-              <App />
-            </ThemeContextProvider>
-          </CallContextProvider>
-        </SocketContextProvider>
-      </AuthContextProvider>
-    </SoundContextProvider>
-  </StrictMode>
+    <Suspense>
+      <SoundContextProvider>
+        <AuthContextProvider>
+          <SocketContextProvider>
+            <CallContextProvider>
+              <ThemeContextProvider>
+                <App />
+              </ThemeContextProvider>
+            </CallContextProvider>
+          </SocketContextProvider>
+        </AuthContextProvider>
+      </SoundContextProvider>
+    </Suspense>
+  </StrictMode>,
 );

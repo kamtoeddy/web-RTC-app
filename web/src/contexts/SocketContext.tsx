@@ -1,16 +1,17 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import { io, Socket } from "socket.io-client";
+import { createContext, useContext, useEffect, useState } from 'react';
+import { io, Socket } from 'socket.io-client';
 
-import { useAuthCTX, User } from "./AuthContext";
+import { useAuthCTX, User } from './AuthContext';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 type EventName =
-  | "cE-call-accepted"
-  | "cE-call-ended"
-  | "cE-call-incomming"
-  | "cE-call-line busy"
-  | "cE-call-ringing";
+  | 'cE-call-icecandidate'
+  | 'cE-call-accepted'
+  | 'cE-call-ended'
+  | 'cE-call-incomming'
+  | 'cE-call-line busy'
+  | 'cE-call-ringing';
 
 type EmitProps = {
   name: EventName;
@@ -31,7 +32,7 @@ const SocketContextProvider = ({ children }: any) => {
   const { user } = useAuthCTX();
 
   const [socket] = useState(
-    io(BACKEND_URL, { transports: ["websocket", "polling"] })
+    io(BACKEND_URL, { transports: ['websocket', 'polling'] }),
   );
 
   const [onlineUsers, setOnlineUsers] = useState<User[]>([]);
@@ -39,7 +40,7 @@ const SocketContextProvider = ({ children }: any) => {
 
   const connectE = () => {
     setIsSocketConnected(true);
-    socket.emit("register", user);
+    socket.emit('register', user);
   };
 
   const onlineUsersE = (users: User[]) => {
@@ -61,31 +62,31 @@ const SocketContextProvider = ({ children }: any) => {
   };
 
   useEffect(() => {
-    socket.on("connect", connectE);
+    socket.on('connect', connectE);
 
-    socket.on("Online Users", onlineUsersE);
+    socket.on('Online Users', onlineUsersE);
 
-    socket.on("User online", userOnlineE);
+    socket.on('User online', userOnlineE);
 
-    socket.on("User offline", userOfflineE);
+    socket.on('User offline', userOfflineE);
 
-    socket.on("disconnect", disconnectE);
+    socket.on('disconnect', disconnectE);
 
     return () => {
-      socket.off("connect", connectE);
+      socket.off('connect', connectE);
 
-      socket.off("Online Users", onlineUsersE);
+      socket.off('Online Users', onlineUsersE);
 
-      socket.off("User online", userOnlineE);
+      socket.off('User online', userOnlineE);
 
-      socket.off("User offline", userOfflineE);
+      socket.off('User offline', userOfflineE);
 
-      socket.off("disconnect", disconnectE);
+      socket.off('disconnect', disconnectE);
     };
   }, [socket]);
 
   const emitEvent = ({ name, props = {}, rooms = [] }: EmitProps) => {
-    socket.emit("_clientEvent", { name, props, rooms });
+    socket.emit('_clientEvent', { name, props, rooms });
   };
 
   const context = {

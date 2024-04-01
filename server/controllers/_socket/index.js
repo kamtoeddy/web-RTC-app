@@ -1,6 +1,6 @@
-const { handleEvent } = require("./_clientEvent");
+const { handleEvent } = require('./_clientEvent');
 
-const onlineUsersRoom = "room-online_users";
+const onlineUsersRoom = 'room-online_users';
 
 global._updateUser = ({ id, ...changes }) => {
   const user = global._getUser(id);
@@ -30,14 +30,14 @@ const updateOnlineUsers = () => {
   const onlineUsers = getOnlineUsers();
 
   global.emitEvent({
-    name: "Online Users",
+    name: 'Online Users',
     data: onlineUsers,
     rooms: [onlineUsersRoom],
   });
 };
 
 function socketController(socket) {
-  socket.on("register", ({ id, name }) => {
+  socket.on('register', ({ id, name }) => {
     global.users.set(id, { id, name, socketId: socket.id });
 
     global.usersSocketToId.set(socket.id, id);
@@ -49,14 +49,14 @@ function socketController(socket) {
     updateOnlineUsers();
   });
 
-  socket.on("Get online users", updateOnlineUsers);
+  socket.on('Get online users', updateOnlineUsers);
 
-  socket.on("_clientEvent", ({ name = "", props = {}, rooms = [] }) => {
+  socket.on('_clientEvent', ({ name = '', props = {}, rooms = [] }) => {
     // console.log("Client event", { name, props, rooms });
     handleEvent({ name, props, rooms }, socket);
   });
 
-  socket.on("disconnect", (reason) => {
+  socket.on('disconnect', (reason) => {
     const userId = global._getUserId(socket.id);
 
     if (!userId) return;

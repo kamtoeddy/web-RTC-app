@@ -1,7 +1,7 @@
-import React, { createContext, useContext } from "react";
+import { createContext, useContext } from 'react';
 
 // helper modules
-import { faker } from "@faker-js/faker";
+import { faker } from '@faker-js/faker';
 
 export type User = {
   id: string;
