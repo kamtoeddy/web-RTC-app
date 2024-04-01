@@ -2,7 +2,6 @@ if (process.env.NODE_ENV !== 'production') require('dotenv').config();
 
 const cors = require('cors');
 const express = require('express');
-const { ExpressPeerServer } = require('peer');
 
 const app = express();
 const httpServer = require('http').createServer(app);
@@ -25,10 +24,6 @@ httpServer.listen(port, async () => {
   console.log(`Server up and running @:${port}`);
   global.io.on('connection', socketController);
 });
-
-// const handlePeerConnections = ExpressPeerServer(server);
-
-// app.use('/peer-conn/peerjs', handlePeerConnections);
 
 // middleware
 app.use(cors());
