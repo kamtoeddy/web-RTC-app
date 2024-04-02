@@ -64,7 +64,7 @@ const VideoCallScreen = () => {
             bgcolor: red[500],
             '&:hover': { bgcolor: red[600] },
           }}
-          onClick={() => endCall?.(correspondent)}
+          onClick={() => endCall(correspondent!)}
         >
           <CallEndIcon />
         </Fab>

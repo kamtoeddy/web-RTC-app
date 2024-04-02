@@ -5,7 +5,10 @@ const calls = {
     task: ({ id, name, sdp }) => ({ id, name, sdp }),
     taskProps: ['id', 'name', 'sdp'],
   },
-  'cE-call-ended': { task: defaultTask, taskProps: [] },
+  'cE-call-ended': {
+    task: ({ id, name }) => ({ id, name }),
+    taskProps: ['id', 'name'],
+  },
   'cE-call-incomming': {
     task: ({ id, name, sdp }) => ({ id, name, sdp }),
     taskProps: ['id', 'name', 'sdp'],

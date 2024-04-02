@@ -67,7 +67,6 @@ export default function SocketContextProvider({
     setOnlineUsers((users) => [...users, user]);
 
   const disconnectE = () => {
-    // console.log("disconnected");
     setIsSocketConnected(false);
     setOnlineUsers([]);
   };

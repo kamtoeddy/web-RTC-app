@@ -68,6 +68,7 @@ export default function SoundContextProvider({
   ) => {
     const _callSound: CallSoundType = { play };
     if (play) _callSound.url = getSoundByProfile(profile);
+    else pauseSound();
 
     set_CallSound(_callSound);
   };

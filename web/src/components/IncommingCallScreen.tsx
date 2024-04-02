@@ -24,7 +24,7 @@ export default function IncommingCallScreen() {
             bgcolor: green[500],
             '&:hover': { bgcolor: green[600] },
           }}
-          onClick={() => acceptCall!(correspondent!)}
+          onClick={() => acceptCall(correspondent!)}
         >
           <CallIcon />
         </Fab>
@@ -36,7 +36,7 @@ export default function IncommingCallScreen() {
             bgcolor: red[500],
             '&:hover': { bgcolor: red[600] },
           }}
-          onClick={() => endCall!(correspondent)}
+          onClick={() => endCall(correspondent!)}
         >
           <CallEndIcon />
         </Fab>

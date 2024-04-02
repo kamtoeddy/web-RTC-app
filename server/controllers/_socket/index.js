@@ -52,7 +52,6 @@ function socketController(socket) {
   socket.on('Get online users', updateOnlineUsers);
 
   socket.on('_clientEvent', ({ name = '', props = {}, rooms = [] }) => {
-    // console.log("Client event", { name, props, rooms });
     handleEvent({ name, props, rooms }, socket);
   });
 

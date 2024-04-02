@@ -29,7 +29,7 @@ export type CallContextType = {
   remoteStream: MediaStream | null;
   // methods
   acceptCall: (u: User) => void;
-  endCall: (u?: User) => void;
+  endCall: (u: User, endedByMe?: boolean) => void;
   makeCall: (u: User) => void;
   toggleAudio: () => void;
   toggleVideo: () => void;
@@ -55,7 +55,6 @@ export default function CallContextProvider({
   const [isOnCall, setIsOnCall] = useState(false);
   const [isVideoOn, setIsVideoOn] = useState(true);
   const [isAudioOn, setIsAudioOn] = useState(true);
-  const [correspondent, setCorrespondent] = useState<User>();
   const [isCallConnected, setIsCallConnected] = useState(false);
   const [isOnIncommingCall, setIsOnIncommingCall] = useState(false);
   const [callStatus, setCallStatus] = useState<CallStatusType>('');
@@ -66,6 +65,7 @@ export default function CallContextProvider({
   );
 
   const iamCallerRef = useRef(false);
+  const correspondentRef = useRef<User>();
   const iceCandidatesRef = useRef<IceInfo[]>([]);
   const peerConnRef = useRef<RTCPeerConnection | null>(null);
 
@@ -173,22 +173,30 @@ export default function CallContextProvider({
     setCallSound({ play: true, profile: 'Outgoing Call' });
     setCallStatus('Calling');
     setIsOnCall(true);
-    setCorrespondent(callee);
+    correspondentRef.current = callee;
   };
 
-  const acceptCall = async (caller: User) => {
-    await createPeer(caller);
+  const acceptCall = async (correspondent: User) => {
+    await createPeer(correspondent);
 
     setCallStatus('');
     setCallSound();
-    setCorrespondent(caller);
+    correspondentRef.current = correspondent;
     setIsOnIncommingCall(false);
     setIsOnCall(true);
   };
 
-  const endCall = (correspondent?: User) => {
-    if (correspondent)
-      emitEvent({ name: 'cE-call-ended', rooms: [correspondent.id] });
+  const endCall = (olDCorrespondent: User, endedByMe = true) => {
+    // call ended by someone else not on current call
+    if (!endedByMe && olDCorrespondent.id != correspondentRef.current?.id)
+      return;
+
+    if (endedByMe)
+      emitEvent({
+        name: 'cE-call-ended',
+        props: user,
+        rooms: [olDCorrespondent.id],
+      });
 
     releaseMediaResources();
 
@@ -198,7 +206,7 @@ export default function CallContextProvider({
 
     setCallSound({ play: false });
     setIsOnCall(false);
-    setCallStatus('Calling');
+    setCallStatus('');
 
     setRemoteSdp(null);
 
@@ -209,7 +217,7 @@ export default function CallContextProvider({
     setIsAudioOn(true);
     setIsCallConnected(false);
     setIsOnIncommingCall(false);
-    setCorrespondent(undefined);
+    correspondentRef.current = undefined;
   };
 
   const toggleAudio = () => {
@@ -246,7 +254,7 @@ export default function CallContextProvider({
     setCallStatus('');
   }
 
-  const onCallEnded = () => endCall();
+  const onCallEnded = (u: User) => endCall(u, false);
 
   async function onCorrespondentIce({ correspondent_id, ice }: IceInfo) {
     if (iamCallerRef.current && peerConnRef.current?.remoteDescription)
@@ -255,7 +263,7 @@ export default function CallContextProvider({
     if (
       !iamCallerRef.current &&
       peerConnRef.current &&
-      correspondent_id === correspondent?.id
+      correspondent_id === correspondentRef.current?.id
     )
       return peerConnRef.current.addIceCandidate(new RTCIceCandidate(ice));
 
@@ -274,16 +282,16 @@ export default function CallContextProvider({
     setCallStatus('Ringing');
   }
 
-  function onIncommingCall(caller: CallSDPInfo) {
-    if (isOnCall || isOnIncommingCall)
-      return emitEvent({ name: 'cE-call-line busy', rooms: [caller.id] });
+  function onIncommingCall(info: CallSDPInfo) {
+    if (correspondentRef.current)
+      return emitEvent({ name: 'cE-call-line busy', rooms: [info.id] });
 
-    emitEvent({ name: 'cE-call-ringing', rooms: [caller.id] });
+    emitEvent({ name: 'cE-call-ringing', rooms: [info.id] });
 
     setCallSound({ play: true, profile: 'Incomming Call' });
-    setRemoteSdp(caller.sdp);
+    setRemoteSdp(info.sdp);
     setIsOnIncommingCall(true);
-    setCorrespondent(caller);
+    correspondentRef.current = info;
   }
 
   useEffect(() => {
@@ -318,7 +326,7 @@ export default function CallContextProvider({
 
   const context = {
     callStatus,
-    correspondent,
+    correspondent: correspondentRef.current,
     isAudioOn,
     isCallConnected,
     isOnIncommingCall,
